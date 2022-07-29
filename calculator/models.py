@@ -1,3 +1,12 @@
 from django.db import models
 
-# Create your models here.
+
+class City(models.Model):
+    auction = models.CharField(max_length=6)
+    city = models.CharField(max_length=50)
+    seaport = models.CharField(max_length=2)
+    price = models.IntegerField()
+    last_update = models.DateTimeField(auto_now=True)
+
+
+
