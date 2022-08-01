@@ -1,0 +1,9 @@
+{% extends 'calculator/base.html' %}
+
+{% block content %}
+<table>
+    {{ form.as_table }}
+</table>
+<p>USD - {{ result.USD }}</p>
+<p>UAH - {{ result.UAH }}</p>
+{% endblock content %}

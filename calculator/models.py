@@ -8,5 +8,8 @@ class City(models.Model):
     price = models.IntegerField()
     last_update = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.city
+
 
 
