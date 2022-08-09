@@ -1,10 +1,157 @@
-html, body {
-    background-image: url(../images/back3.png);
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-color: #464646;
-    background-size: cover;
+body{
+    margin: 0;
+    letter-spacing: 2px;
+    font-family: sans-serif;
+}
+
+header {
+  background: rgba(54, 5, 110, 0.801);
+  box-shadow: 0 4px 16px #ccc;
+  font-size: 20px;
+}
+
+ul{
+    list-style: none;
+    margin: 0 0 0;
+    padding: 10px;
+}
+
+.menu_logo,
+.menu_el {
+    color: rgb(199, 199, 199);
+    text-decoration: none;
+}
+
+.menu_el:hover,
+.menu_logo:hover {
+    color: rgb(255, 255, 255);
+}
+
+.menu_logo {
+    color: rgb(236, 236, 236);
+}
+
+.menu_el {
+    font-size: 18px;
+}
+
+li{
+    display: inline;
+}
+
+.logo {
+    float: left;
+}
+
+
+
+
+
+.content {
+    position: relative;
+    width: 100%;
+    display: block;
+    margin: 0 auto;
+    padding: 0;
+    text-align: center;
+}
+
+.calc_wrapper, 
+.res_wrapper {
+	width: 49%;
+	display: inline-block;
+    vertical-align: top;
+}
+
+.calc_form {
+    margin-top: 3px;
+}
+
+.res_wrapper {
+    height: 552px;
+    padding: 24px;
+    top: 0px;
+    border-radius: 10px;
+    box-shadow: 0 1px 5px #ccc;
+}
+
+.res_form {
+    width: 100%;
+}
+
+.url_form,
+.calc_form {
+    padding: 24px;
+    width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 1px 5px #ccc;
+}
+
+
+.title_h2 {
+    font-size: 23px;
+    margin-bottom: 20px;
+}
+
+.form_input {
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    width: 100%;
+    padding: 5px;
+    padding-left: 15px;
+    margin-left: 50px;
+    margin-bottom: 7px;
+    border-radius: 5px;
+    border-width: 1px;
+}
+
+.form_group {
+    width: 80%;
+    padding: 30px;
+}
+
+.but_submit {
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    border-radius: 5px;
+    border-width: 1px;
+    padding: 7px;
+    font-size: 15px;
+    background: rgba(36, 36, 36, 0.801);
+    color: rgb(255, 255, 255);
+}
+
+.but_submit:hover,
+.but_submit:focus {
+    background: rgba(0, 0, 0, 0.801);
 
 }
 
+.input_url {
+    width: 70%;
+    font-size: 12px;
+    letter-spacing: 1px;
+    font-family: sans-serif;
+    padding: 5px;
+}
+
+label {
+    font-size: 14px;
+}
+
+.errorlist {
+    font-size: 0px;
+    margin: 0;
+    padding: 0%;
+}
+
+input#id_total {
+    font-size: 18px;
+    margin-top: 20px;
+    background-color: rgb(238, 238, 238);
+    border-width: 1px;
+    border-color: rgb(105, 105, 105);
+    border-radius: 5px;
+    color: rgb(0, 0, 0);
+}
