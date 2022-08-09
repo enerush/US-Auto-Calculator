@@ -1,37 +1,35 @@
 {% extends 'calculator/base.html' %} {% block content %}
 
 <div class="content">
- <div class="calc_wrapper">
-    <form class="url_form" action="" method="url_scan" >
-        <h2 class="title_h2">Розрахувати за посиланням:</h2>
-        <input
+  <div class="calc_wrapper">
+    <form class="url_form" action="" method="url_scan">
+      <h2 class="title_h2">Розрахувати за посиланням:</h2>
+      <input
         type="text"
         class="input_url"
         placeholder="https://www.copart.com/lot/50811178"
         required
-        />
-        <button type="submit" id="scan" class="but_submit">Сканировать</button>
+      />
+      <button type="submit" id="scan" class="but_submit">Сканировать</button>
     </form>
 
     <form action="" class="calc_form" method="post">
-        <h2 class="title_h2">Розрахувати самостійно:</h1>
-            <table class="form_group fw-light">
-                {% csrf_token %} 
-                {{ form.as_table }}
-            </table>
-        <button type="submit" class="but_submit">Розрахувати</button>
+      <h2>class="title_h2">Розрахувати самостійно:</h2>
+      <table class="form_group fw-light">
+        {% csrf_token %} {{ form.as_table }}
+      </table>
+      <button type="submit" class="but_submit">Розрахувати</button>
     </form>
- </div>
+  </div>
 
- <div class="res_wrapper">
+  <div class="res_wrapper">
     <form class="res_form">
-        <h2 class="title_h2">Результат розрахунку:</h1>
-        <table class="form_group fw-light">
-            {% csrf_token %} 
-            {{ res_form.as_table }}
-        </table>
+      <h2>class="title_h2">Результат розрахунку:</h2>
+      <table class="form_group fw-light">
+        {% csrf_token %} {{ res_form.as_table }}
+      </table>
     </form>
-</div>
+  </div>
 </div>
 
 {% endblock content %}
