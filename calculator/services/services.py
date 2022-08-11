@@ -1,117 +1,150 @@
+from calculator.models import City
 from datetime import date
 
-from calculator.forms import ResultForm
-from calculator.models import City
-
-PORT_UNLOAD_COST = 400.00
-BROKER_COST = 400.00
+import lxml.html
+import requests
 
 
-def get_result_form(request):
-    res = get_total_cost(request)
-    return ResultForm(res)
+class Calculator:
+    PORT_UNLOAD_COST = 400.00
+    BROKER_COST = 400.00
+
+    def __init__(self, req):
+        self._price = int(req.POST['price'])
+        self._year = int(req.POST['year'])
+        self._eng_type = req.POST['engine_type']
+        self._eng_cc = float(req.POST['engine_cc'])
+        self._kwh = int(req.POST['kwh']) if req.POST['kwh'] else 0
+        self._auction_name = req.POST['auction_name']
+        self._city = req.POST['city']
+        self._company_fee = float(req.POST['company_fee'])
+
+        self.auc_fee = self._calc_auc_fee()
+        self.bank_fee = self._calc_bank_fee()
+        self.ship_cost = self._calc_ship_cost()
+        self.unload_cost = self.PORT_UNLOAD_COST
+        self.broker_cost = self.BROKER_COST
+        self.import_fee = self._calc_import_fee()
+        self.total = self.auc_fee + self.bank_fee + self.ship_cost +\
+                       self.unload_cost + self.broker_cost + self.import_fee
+
+    def __call__(self):
+        """returns the full price of the car, which includes customs fees, delivery, registration"""
+        return {
+                'price': self._price, 'auction_fee': self.auc_fee,
+                'bank_fee': self.bank_fee, 'ship_cost': self.ship_cost,
+                'port_unload': self.unload_cost, 'broker': self.broker_cost,
+                'import_fee': self.import_fee, 'company_fee': self._company_fee,
+                'total': self.total
+                }
+
+    def _calc_auc_fee(self):
+        buyer_fee = self._price
+        gate_fee = 0
+        bid_fee = 0
+        return round(buyer_fee + gate_fee + bid_fee, 2)
+
+    def _calc_bank_fee(self):
+        res = self._price * 0.005
+        return 500 + 12 if res > 500 else res + 12
+
+    def _calc_ship_cost(self):
+        c = City.objects.filter(auction=self._auction_name, city=self._city)
+        return float(c[0].price)
+
+    def _calc_import_fee(self):
+        if self._eng_type == 'ELECTRIC':
+            return round(self._kwh * 1.02, 2)
+
+        year_kof = self._calc_year_kof(self._year)
+        engine_kof = self._calc_engine_kof(type=self._eng_type, cc=self._eng_cc)
+
+        import_tax = self._price * 0.1
+        excise_tax = engine_kof * self._eng_cc * year_kof
+        vat = (import_tax + excise_tax + self._price) * 0.2
+        return round(import_tax + excise_tax + vat, 2)
+
+    @staticmethod
+    def _calc_year_kof(year):
+        kof = date.today().year - year - 1
+        return 15 if kof > 15 else 1 if kof < 1 else kof
+
+    @staticmethod
+    def _calc_engine_kof(type, cc):
+        if type == 'DIESEL':
+            return 154.10 if cc > 3.5 else 77.05
+
+        if type in ('GAS', 'HYBRID'):
+            return 102.73 if cc > 3.0 else 51.37
 
 
-def get_total_cost(req):
-    """returns the full price of the car, which includes customs fees, delivery, registration"""
-    price = float(req.POST['price'])
-    bank_fee = calc_bank_fee(price)
-    auction_fee = get_auc_fee(price)
-    ship_cost = calc_ship_cost(req.POST['auction_name'], req.POST['city'])
-    import_fee = calc_import_fee(req)
-    port_unload = PORT_UNLOAD_COST
-    broker = BROKER_COST
-    company_fee = float(req.POST['company_fee'])
+class ScanData:
+    RESPONSE_COPART = 'https://www.copart.com/public/data/lotdetails/solr/'
+    HEADERS = {
+        'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36',
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7,uk;q=0.6',
+        'sec-ch-ua-mobile': '?0',
+        'sec-fetch-dest': 'empty',
+        'sec-fetch-mode': 'cors',
+        'sec-fetch-site': 'same-origin'
+    }
 
-    total = round(price + auction_fee + bank_fee + ship_cost + import_fee + port_unload + broker + company_fee, 2)
+    ENGINE_TYPES = {
+        'Gasoline': 'GAS',
+        'Diesel': 'DIESEL',
+        'Electric': 'ELECTRIC',
+        'Hybrid': 'HYBRID'
+    }
 
-    return {
-            'price': price, 'auction_fee': round(auction_fee, 2),
-            'bank_fee': bank_fee, 'ship_cost': ship_cost,
-            'port_unload': port_unload, 'broker': broker,
-            'import_fee': import_fee, 'company_fee': company_fee,
-            'total': total
+    def __init__(self, req):
+        self._req = req
+        self._url = req.POST['url']
+        self._auc_name = self._get_auc_name(self._url)
+        self._lot_number = self._get_lot_number()
+
+    @staticmethod
+    def _get_auc_name(url):
+        name = url.split('.com')[0].split('.')[-1]
+        return name.capitalize() if name == 'copart' else name.upper()
+
+    def _get_lot_number(self):
+        if self._auc_name == 'Copart':
+            return self._url.split('/')[4]
+        elif self._auc_name == 'IAAI':
+            return self._url.split('/')[-1].split('~')[0]
+
+    def get_data(self):
+        dct = {}
+        if self._auc_name == 'Copart':
+            res = requests.get(url=self.RESPONSE_COPART + self._lot_number, headers=self.HEADERS)
+            data = res.json()['data']['lotDetails']
+            dct = {
+                'year': data['lcy'],
+                'engine_type': data['ft'],
+                'engine_cc': data['egn'].split('L')[0],
+                'auction_name': self._auc_name,
+                'city': data['syn'].split('-')[-1].strip() + '-' + data['syn'].split()[0].strip()
             }
 
+        elif self._auc_name == 'IAAI':
+            res = requests.get(url=self._url, headers=self.HEADERS)
+            tree = lxml.html.fromstring(res.text)
 
-def get_auc_fee(price):
-    if price < 1000:
-        buyer_fee = 275
-        bid_fee = 39
-    elif 1000 <= price < 1800:
-        buyer_fee = 69
-        bid_fee = 59
-    elif 1800 <= price < 3000:
-        buyer_fee = 480
-        bid_fee = 79
-    elif 3000 <= price < 5000:
-        buyer_fee = 650
-        bid_fee = 89
-    elif 5000 <= price < 10000:
-        buyer_fee = 750
-        bid_fee = 99
-    elif 10000 <= price < 15000:
-        buyer_fee = 800
-        bid_fee = 119
-    else:
-        buyer_fee = price * 0.07
-        bid_fee = 119
-
-    gate_fee = 79
-
-    return buyer_fee + gate_fee + bid_fee
-
-
-def calc_bank_fee(price):
-    res = price * 0.005
-    return 500 + 12 if res > 500 else res + 12
-
-
-def calc_ship_cost(auction, city):
-    c = City.objects.filter(auction=auction, city=city)
-    return float(c[0].price)
-
-
-def calc_import_fee(req):
-    price = int(req.POST['price'])
-    engine_type = req.POST['engine_type']
-    engine_cc = float(req.POST['engine_cc'])
-    kwh = req.POST['kwh']
-    year = int(req.POST['year'])
-
-    if engine_type == 'ELECTRIC' and kwh:
-        return round(int(kwh) * 1.02, 2)
-    elif engine_type == 'ELECTRIC' and not kwh:
-        return 0
-
-    year_kof = calc_year_kof(year)
-    engine_kof = get_engine_kof(engine_type, engine_cc)
-
-    import_tax = price * 0.1
-    excise_tax = engine_kof * engine_cc * year_kof
-    print(engine_kof, engine_cc, year_kof)
-    vat = (import_tax + excise_tax + price) * 0.2
-    print(import_tax*36.56, excise_tax*36.56, vat*36.56, sep='\n')
-    return round(import_tax + excise_tax + vat, 2)
-
-
-def calc_year_kof(year):
-    kof = date.today().year - year - 1
-    return 15 if kof > 15 else 1 if kof < 1 else kof
-
-
-def get_engine_kof(engine_type, engine_cc):
-
-    if engine_type == 'DIESEL':
-        if engine_cc > 3.5:
-            return 154.10
-        else:
-            return 77.05
-
-    if engine_type in ('GAS', 'HYBRID'):
-        if engine_cc > 3.0:
-            return 102.73
-        else:
-            return 51.37
-
-
+            city = \
+            tree.xpath('/html/body/section/main/section[3]/div[1]/div[2]/div/div[1]/div[1]/div[2]/ul/li[2]/span[2]')[0].text_content()
+            engine_cc = tree.xpath('//*[@id="engine_novideo"]')[0].text_content().split('L')[0]
+            year = tree.xpath('/html/body/section/main/section[2]/div[2]/div/h1')[0].text_content().split()[0]
+            engine_type = tree.xpath('//*[@id="waypoint-trigger"]/div[2]/ul/li[7]/span[2]')[0].text_content().strip()
+            city = city.split('(')[0].replace('-', ' ').strip(' 1234').upper() + '-' + city.split('(')[1].strip(')')
+            city = city.replace('  ', '')
+            dct = {
+                'year': year,
+                'engine_type': self.ENGINE_TYPES[engine_type],
+                'engine_cc': engine_cc.strip('-'),
+                'auction_name': self._auc_name,
+                'city': city
+            }
+        self._req.POST.update(dct)
+        return self._req

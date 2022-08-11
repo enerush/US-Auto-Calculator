@@ -4,7 +4,7 @@ from numpy import arange
 from calculator.models import *
 
 
-class CalculatorForm(forms.Form):
+class InputForm(forms.Form):
     CHOICES_YEARS = ((year, year) for year in range(date.today().year, 1950, -1))
 
     CHOICES_ENGINE_TYPE = (('GAS', "Бензин"),
@@ -19,7 +19,7 @@ class CalculatorForm(forms.Form):
     CHOICES_CITY = sorted(set(CHOICES_CITY))
 
     def __init__(self, *args, **kwargs):
-        super(CalculatorForm, self).__init__(*args, **kwargs)
+        super(InputForm, self).__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form_input'
 

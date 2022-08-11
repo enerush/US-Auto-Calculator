@@ -1,8 +1,6 @@
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
-
 from .forms import *
-from .models import *
 from .services.services import *
 
 menu = [{'title': 'Carfax', 'url_name': 'carfax'},
@@ -13,35 +11,62 @@ menu = [{'title': 'Carfax', 'url_name': 'carfax'},
 
 
 def index(request):
-    form = CalculatorForm()
-    res_form = ResultForm()
-    context = {'form': form,
-               'res_form': res_form,
+    context = {'input_form': InputForm(),
+               'res_form': ResultForm(),
                'menu': menu,
-               'title': 'Головна'}
-    if request.method == 'POST':
-        context['form'] = CalculatorForm(request.POST)
-        context['res_form'] = get_result_form(request)
-        return render(request, 'calculator/index.html', context=context)
+               'title': 'US Auto Calculator: Калькулятор розрахунку'}
 
+    if request.method == 'POST':
+        if 'url' in request.POST and 'price' not in request.POST:
+            request.POST = request.POST.copy()
+            scan = ScanData(request)
+            request = scan.get_data()
+            context['input_form'] = InputForm(request.POST)
+            return render(request, 'calculator/index.html', context=context)
+
+        calc = Calculator(request)
+        context['input_form'] = InputForm(request.POST)
+        context['res_form'] = ResultForm(calc())
+        return render(request, 'calculator/index.html', context=context)
     return render(request, 'calculator/index.html', context=context)
 
 
 def carfax(request):
-    return HttpResponse('Сторінка "Carfax". Сайт знаходиться в стадії розробки!')
+    context = {
+        'menu': menu,
+        'title': 'US Auto Calculator: Carfax звіт'
+    }
+    return render(request, 'calculator/carfax.html', context=context)
 
 
 def decoder(request):
-    return HttpResponse('Сторінка "VIN Decoder". Сайт знаходиться в стадії розробки!')
+    context = {
+        'menu': menu,
+        'title': 'US Auto Calculator: VIN decoder'
+    }
+    return render(request, 'calculator/decoder.html', context=context)
 
 
 def contact(request):
-    return HttpResponse('Сторінка "Контакти". Сайт знаходиться в стадії розробки!')
+    context = {
+        'menu': menu,
+        'title': 'US Auto Calculator: Контакти'
+    }
+    return render(request, 'calculator/contact.html', context=context)
 
 
 def about(request):
-    return HttpResponse('Сторінка "Про нас". Сайт знаходиться в стадії розробки!')
+    context = {
+        'menu': menu,
+        'title': 'US Auto Calculator: Про нас'
+    }
+    return render(request, 'calculator/about.html', context=context)
 
 
 def login(request):
-    return HttpResponse('Сторінка "Вхід". Сайт знаходиться в стадії розробки!')
+    context = {
+        'menu': menu,
+        'title': 'US Auto Calculator: Вхід'
+    }
+    return render(request, 'calculator/login.html', context=context)
+

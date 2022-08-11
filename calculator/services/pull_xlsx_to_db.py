@@ -8,7 +8,7 @@ def pull_to_db(xlsx_file: str):
     sheet = book.active
     rows = sheet.rows
 
-    conn = sqlite3.connect('db.sqlite3')
+    conn = sqlite3.connect('../../../db.sqlite3')
     cursor = conn.cursor()
 
     for row in rows:
@@ -20,6 +20,6 @@ def pull_to_db(xlsx_file: str):
 
     conn.commit()
     conn.close()
-    
+
 
 pull_to_db('prices.xlsx')
