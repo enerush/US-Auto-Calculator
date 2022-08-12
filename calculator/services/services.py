@@ -45,6 +45,7 @@ class Calculator:
         self._kwh = int(req.POST['kwh']) if req.POST['kwh'] else 0
         self._auction_name = req.POST['auction_name']
         self._city = req.POST['city']
+        self._repair_cost = req.POST['repair_cost']
         self._company_fee = float(req.POST['company_fee'])
 
         self.auc_fee = self._calc_auc_fee()
@@ -63,8 +64,8 @@ class Calculator:
                 'bank_fee': self.bank_fee, 'ship_cost': self.ship_cost,
                 'port_unload': self.unload_cost, 'broker': self.broker_cost,
                 'import_fee': self.import_fee, 'company_fee': self._company_fee,
-                'total': self.total
-                }
+                'repair_cost': self._repair_cost, 'total': self.total
+        }
 
     def _calc_auc_fee(self):
         service_fee = 79

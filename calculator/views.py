@@ -5,9 +5,9 @@ from .services.services import *
 
 menu = [{'title': 'Carfax', 'url_name': 'carfax'},
         {'title': 'VIN Decoder', 'url_name': 'decoder'},
-        {'title': 'Контакти', 'url_name': 'contact'},
-        {'title': 'Про нас', 'url_name': 'about'},
-        {'title': 'Вхід', 'url_name': 'login'}]
+        {'title': 'Contact', 'url_name': 'contact'},
+        {'title': 'About', 'url_name': 'about'},
+        {'title': 'Sign', 'url_name': 'login'}]
 
 
 def index(request):

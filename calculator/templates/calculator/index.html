@@ -12,7 +12,7 @@
         placeholder="https://www.copart.com/lot/50811178"
         required
         />
-        <button type="submit" id="scan" class="but_submit">Сканировать</button>
+        <button type="submit" id="scan" class="but_submit">СКАНУВАТИ</button>
         {% csrf_token %}
     </form>
 
@@ -22,7 +22,7 @@
                 {% csrf_token %} 
                 {{ input_form.as_table }}
             </table>
-        <button type="submit" class="but_submit">Розрахувати</button>
+        <button type="submit" class="but_submit calc_but">РОЗРАХУВАТИ</button>
     </form>
  </div>
 

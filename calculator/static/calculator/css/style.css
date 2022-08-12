@@ -2,23 +2,25 @@ body{
     margin: 0;
     letter-spacing: 2px;
     font-family: sans-serif;
+    background-color: #dadada !important;
 }
 
 header {
   background: rgba(54, 5, 110, 0.801);
-  box-shadow: 0 4px 16px #ccc;
+  box-shadow: 0 4px 6px #ccc;
   font-size: 20px;
 }
 
 ul{
     list-style: none;
-    margin: 0 0 0;
-    padding: 10px;
+    margin: 0 0 0 0;
+    padding: 7px;
+    box-shadow: 0 1px 5px rgb(116, 116, 116);
 }
 
 .menu_logo,
 .menu_el {
-    color: rgb(199, 199, 199);
+    color: rgb(218, 218, 218);
     text-decoration: none;
 }
 
@@ -32,7 +34,7 @@ ul{
 }
 
 .menu_el {
-    font-size: 18px;
+    font-size: 17px;
 }
 
 li{
@@ -42,9 +44,6 @@ li{
 .logo {
     float: left;
 }
-
-
-
 
 
 .content {
@@ -58,21 +57,22 @@ li{
 
 .calc_wrapper, 
 .res_wrapper {
-	width: 49%;
+	width: 35%;
 	display: inline-block;
     vertical-align: top;
 }
 
 .calc_form {
-    margin-top: 3px;
+    margin-top: 4px;
+    height: 410px;
 }
 
 .res_wrapper {
-    height: 552px;
-    padding: 24px;
-    top: 0px;
-    border-radius: 10px;
+    height: 516px;
+    padding: 17px;
+    border-radius: 7px;
     box-shadow: 0 1px 5px #ccc;
+    background-color: rgb(255, 255, 255);
 }
 
 .res_form {
@@ -81,16 +81,17 @@ li{
 
 .url_form,
 .calc_form {
-    padding: 24px;
+    padding: 17px;
     width: 100%;
-    border-radius: 10px;
+    border-radius:7px;
     box-shadow: 0 1px 5px #ccc;
+    background-color: white;
 }
 
 
 .title_h2 {
-    font-size: 23px;
-    margin-bottom: 20px;
+    font-size: 18px;
+    margin-bottom: 17px;
 }
 
 .form_input {
@@ -98,28 +99,36 @@ li{
     letter-spacing: 1px;
     font-family: sans-serif;
     width: 100%;
-    padding: 5px;
+    padding: 2px;
     padding-left: 15px;
-    margin-left: 50px;
-    margin-bottom: 7px;
-    border-radius: 5px;
+    margin-left: 70px;
+    margin-bottom: 5px;
+    border-radius: 4px;
     border-width: 1px;
 }
 
 .form_group {
-    width: 80%;
+    width: 70%;
     padding: 30px;
 }
 
 .but_submit {
     letter-spacing: 1px;
     font-family: sans-serif;
-    border-radius: 5px;
-    border-width: 1px;
-    padding: 7px;
-    font-size: 15px;
+    border-radius: 4px;
+    border: none;
+    padding: 6px;
+    font-size: 11px;
     background: rgba(36, 36, 36, 0.801);
     color: rgb(255, 255, 255);
+    font-weight: bold;
+    box-shadow: 0 2px 3px #ccc;
+
+}
+
+.calc_but {
+    margin: 10px 40px 0 0;
+    float: right;
 }
 
 .but_submit:hover,
@@ -129,15 +138,21 @@ li{
 }
 
 .input_url {
-    width: 70%;
+    width: 60%;
     font-size: 12px;
+    border-radius: 4px;
+    border-width: 1px;
     letter-spacing: 1px;
     font-family: sans-serif;
-    padding: 5px;
+    padding: 2px 0 2px 15px;
 }
 
 label {
+    width: 150%;
     font-size: 14px;
+    letter-spacing: 1px;
+    font-weight: lighter;
+    float: left;
 }
 
 .errorlist {
@@ -147,11 +162,11 @@ label {
 }
 
 input#id_total {
-    font-size: 18px;
-    margin-top: 20px;
-    background-color: rgb(238, 238, 238);
+    font-size: 14px;
+    margin-top: 10px;
+    background-color: rgb(255, 255, 255);
     border-width: 1px;
     border-color: rgb(105, 105, 105);
-    border-radius: 5px;
+    border-radius: 4px;
     color: rgb(0, 0, 0);
 }
