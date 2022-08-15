@@ -24,7 +24,7 @@ class InputForm(forms.Form):
             self.fields[field].widget.attrs['class'] = 'form_input'
 
     price = forms.IntegerField(label='Вартість авто', label_suffix='', min_value=0,
-                               widget=forms.NumberInput(attrs={'placeholder': '8350.00'}))
+                               widget=forms.NumberInput(attrs={'placeholder': ' 8350.00'}))
     year = forms.TypedChoiceField(label='Рік виготовлення', label_suffix='', choices=CHOICES_YEARS)
     engine_type = forms.TypedChoiceField(label='Тип двигуна', label_suffix='', choices=CHOICES_ENGINE_TYPE)
     engine_cc = forms.TypedChoiceField(label="Об'єм двигуна", label_suffix='', choices=CHOICES_ENGINE_CC)
@@ -33,9 +33,9 @@ class InputForm(forms.Form):
     auction_name = forms.TypedChoiceField(label='Аукціон', label_suffix='', choices=CHOICES_AUCTION)
     city = forms.TypedChoiceField(label='Площадка', label_suffix='', choices=CHOICES_CITY)
     repair_cost = forms.IntegerField(label='Ремонтні роботи', label_suffix='', min_value=0,
-                                     widget=forms.NumberInput(attrs={'placeholder': '2500.00'}))
+                                     widget=forms.NumberInput(attrs={'placeholder': ' 2500.00'}))
     company_fee = forms.IntegerField(label='Послуги фірми', label_suffix='', min_value=0,
-                               widget=forms.NumberInput(attrs={'placeholder': '1000.00'}))
+                               widget=forms.NumberInput(attrs={'placeholder': ' 1000.00'}))
 
 
 class ResultForm(forms.Form):

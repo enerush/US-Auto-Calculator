@@ -1,3 +1,6 @@
+import json
+from selenium import webdriver
+
 from calculator.models import City
 from datetime import date
 
@@ -6,8 +9,11 @@ import requests
 
 
 class Calculator:
-    PORT_UNLOAD_COST = 400.00
-    BROKER_COST = 400.00
+    PORT_UNLOAD_COST = 400.0
+    BROKER_COST = 400.0
+    TOW_COST = 220.0
+    CERTIFICATE_EURO5 = 300.0
+    CURRENT_EXCHANGE_RATE_UAH = 36.56
     GATE_FEE = {
         100: 1, 200: 25,
         300: 50, 400: 75,
@@ -45,7 +51,7 @@ class Calculator:
         self._kwh = int(req.POST['kwh']) if req.POST['kwh'] else 0
         self._auction_name = req.POST['auction_name']
         self._city = req.POST['city']
-        self._repair_cost = req.POST['repair_cost']
+        self._repair_cost = float(req.POST['repair_cost'])
         self._company_fee = float(req.POST['company_fee'])
 
         self.auc_fee = self._calc_auc_fee()
@@ -54,6 +60,7 @@ class Calculator:
         self.unload_cost = self.PORT_UNLOAD_COST
         self.broker_cost = self.BROKER_COST
         self.import_fee = self._calc_import_fee()
+        self._car_registration = self._calc_car_registration()
         self.total = self.auc_fee + self.bank_fee + self.ship_cost +\
                        self.unload_cost + self.broker_cost + self.import_fee
 
@@ -64,7 +71,9 @@ class Calculator:
                 'bank_fee': self.bank_fee, 'ship_cost': self.ship_cost,
                 'port_unload': self.unload_cost, 'broker': self.broker_cost,
                 'import_fee': self.import_fee, 'company_fee': self._company_fee,
-                'repair_cost': self._repair_cost, 'total': self.total
+                'repair_cost': self._repair_cost, 'tow_cost': self.TOW_COST,
+                'certificate_euro5': self.CERTIFICATE_EURO5, 'car_registration': self._car_registration,
+                'total': round(self.total, 2)
         }
 
     def _calc_auc_fee(self):
@@ -117,6 +126,20 @@ class Calculator:
         if egn_type in ('GAS', 'HYBRID'):
             return 102.73 if cc > 3.0 else 51.37
 
+    def _calc_car_registration(self):
+        car_price_uah = self._price * self.CURRENT_EXCHANGE_RATE_UAH
+
+        if car_price_uah <= 409_365:
+            coeff = 0.03
+        elif 409_365 < car_price_uah <= 719_490:
+            coeff = 0.04
+        else:
+            coeff = 0.05
+
+        pension_fund_fee = self._price * coeff
+        tsc_fee = 830 / self.CURRENT_EXCHANGE_RATE_UAH
+        return round(pension_fund_fee + tsc_fee, 2)
+
 
 class ScanData:
     RESPONSE_COPART = 'https://www.copart.com/public/data/lotdetails/solr/'
@@ -159,8 +182,18 @@ class ScanData:
     def get_data(self):
         dct = {}
         if self._auc_name == 'Copart':
-            res = requests.get(url=self.RESPONSE_COPART + self._lot_number, headers=self.HEADERS)
-            data = res.json()['data']['lotDetails']
+            driver = webdriver.Chrome(executable_path='././chromedriver')
+            try:
+                driver.get(url=self.RESPONSE_COPART + self._lot_number)
+                s = driver.page_source
+                driver.quit()
+
+                s = s.split('pre-wrap;">')[1].split('</pre></body></html>')[0]
+                dct = json.loads(s)
+                data = dct['data']['lotDetails']
+            except:
+                return self._req
+
             dct = {
                 'year': data['lcy'],
                 'engine_type': data['ft'],

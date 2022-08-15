@@ -1,8 +1,8 @@
-body{
-    margin: 0;
-    letter-spacing: 2px;
-    font-family: sans-serif;
-    background-color: #dadada !important;
+body {
+  margin: 0;
+  letter-spacing: 2px;
+  font-family: sans-serif;
+  background-color: #dadada !important;
 }
 
 header {
@@ -11,162 +11,171 @@ header {
   font-size: 20px;
 }
 
-ul{
-    list-style: none;
-    margin: 0 0 0 0;
-    padding: 7px;
-    box-shadow: 0 1px 5px rgb(116, 116, 116);
+ul {
+  list-style: none;
+  padding: 7px;
+  box-shadow: 0 1px 5px rgb(116, 116, 116);
+}
+
+.logo-img {
+  width: 40px;
+  height: 25px;
+  margin: 0 10px 4px 0;
 }
 
 .menu_logo,
 .menu_el {
-    color: rgb(218, 218, 218);
-    text-decoration: none;
+  color: rgb(218, 218, 218);
+  text-decoration: none;
 }
 
 .menu_el:hover,
 .menu_logo:hover {
-    color: rgb(255, 255, 255);
+  color: rgb(255, 255, 255);
 }
 
 .menu_logo {
-    color: rgb(236, 236, 236);
+  color: rgb(236, 236, 236);
 }
 
 .menu_el {
-    font-size: 17px;
+  font-size: 17px;
+  margin: 10px;
 }
 
-li{
-    display: inline;
+li {
+  display: inline;
 }
 
 .logo {
-    float: left;
+  float: left;
 }
-
 
 .content {
-    position: relative;
-    width: 100%;
-    display: block;
-    margin: 0 auto;
-    padding: 0;
-    text-align: center;
+  position: relative;
+  width: 100%;
+  display: block;
+  margin: 0 auto;
+  padding: 0;
+  text-align: center;
 }
 
-.calc_wrapper, 
+.calc_wrapper,
 .res_wrapper {
-	width: 35%;
-	display: inline-block;
-    vertical-align: top;
+  width: 35%;
+  display: inline-block;
+  vertical-align: top;
 }
 
 .calc_form {
-    margin-top: 4px;
-    height: 410px;
+  margin-top: 5px;
+  height: 410px;
 }
 
 .res_wrapper {
-    height: 516px;
-    padding: 17px;
-    border-radius: 7px;
-    box-shadow: 0 1px 5px #ccc;
-    background-color: rgb(255, 255, 255);
+  height: 515px;
+  padding: 17px;
+  border-radius: 7px;
+  box-shadow: 0 1px 5px #ccc;
+  background-color: rgb(255, 255, 255);
 }
 
 .res_form {
-    width: 100%;
+  width: 100%;
 }
 
 .url_form,
 .calc_form {
-    padding: 17px;
-    width: 100%;
-    border-radius:7px;
-    box-shadow: 0 1px 5px #ccc;
-    background-color: white;
+  padding: 17px;
+  width: 100%;
+  border-radius: 7px;
+  box-shadow: 0 1px 5px #ccc;
+  background-color: white;
 }
 
-
 .title_h2 {
-    font-size: 18px;
-    margin-bottom: 17px;
+  font-size: 18px;
+  margin-bottom: 17px;
 }
 
 .form_input {
-    font-size: 12px;
-    letter-spacing: 1px;
-    font-family: sans-serif;
-    width: 100%;
-    padding: 2px;
-    padding-left: 15px;
-    margin-left: 70px;
-    margin-bottom: 5px;
-    border-radius: 4px;
-    border-width: 1px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  font-family: sans-serif;
+  width: 100%;
+  padding: 2px;
+  padding-left: 15px;
+  margin-left: 70px;
+  margin-bottom: 5px;
+  border-radius: 3px;
+  border-width: 1px;
+  border-bottom-style: 1px;
+  box-shadow: 0 1px 2px rgb(204, 204, 204);
 }
 
 .form_group {
-    width: 70%;
-    padding: 30px;
+  width: 70%;
+  padding: 30px;
 }
 
 .but_submit {
-    letter-spacing: 1px;
-    font-family: sans-serif;
-    border-radius: 4px;
-    border: none;
-    padding: 6px;
-    font-size: 11px;
-    background: rgba(36, 36, 36, 0.801);
-    color: rgb(255, 255, 255);
-    font-weight: bold;
-    box-shadow: 0 2px 3px #ccc;
-
+  letter-spacing: 1px;
+  font-family: sans-serif;
+  border-radius: 4px;
+  border: none;
+  padding: 6px;
+  font-size: 11px;
+  background: rgba(36, 36, 36, 0.801);
+  color: rgb(255, 255, 255);
+  font-weight: bold;
+  box-shadow: 0 2px 3px #ccc;
 }
 
 .calc_but {
-    margin: 10px 40px 0 0;
-    float: right;
+  margin: 10px 40px 0 0;
+  float: right;
 }
 
 .but_submit:hover,
 .but_submit:focus {
-    background: rgba(0, 0, 0, 0.801);
-
+  background: rgba(0, 0, 0, 0.801);
 }
 
 .input_url {
-    width: 60%;
-    font-size: 12px;
-    border-radius: 4px;
-    border-width: 1px;
-    letter-spacing: 1px;
-    font-family: sans-serif;
-    padding: 2px 0 2px 15px;
+  width: 60%;
+  font-size: 12px;
+  border-radius: 3px;
+  border-width: 1px;
+  letter-spacing: 1px;
+  font-family: sans-serif;
+  padding: 2px 0 2px 15px;
+  box-shadow: 0 1px 2px rgb(204, 204, 204);
 }
 
 label {
-    width: 150%;
-    font-size: 14px;
-    letter-spacing: 1px;
-    font-weight: lighter;
-    float: left;
+  width: 150%;
+  font-size: 14px;
+  letter-spacing: 1px;
+  font-weight: lighter;
+  float: left;
 }
 
 .errorlist {
-    font-size: 0px;
-    margin: 0;
-    padding: 0%;
+  font-size: 0px;
+  margin: 0;
+  padding: 0%;
 }
 
 input#id_total {
-    font-size: 14px;
-    margin-top: 10px;
-    background-color: rgb(255, 255, 255);
-    border-width: 1px;
-    border-color: rgb(105, 105, 105);
-    border-radius: 4px;
-    color: rgb(0, 0, 0);
+  font-size: 14px;
+  margin-top: 7px;
+  border-width: 1px;
+  border-color: rgb(105, 105, 105);
+  border-radius: 10px;
+  background-color: rgb(216, 216, 216);
+}
+
+.description {
+  margin-top: 10px;
+  font-size: 14px;
 }

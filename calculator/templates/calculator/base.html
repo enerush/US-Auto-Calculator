@@ -9,6 +9,10 @@
       href="{% static 'calculator/css/style.css' %}"
       rel="stylesheet"
     />
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'calculator/images/apple-touch-icon.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'calculator/images/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'calculator/images/favicon-16x16.png' %}">
+    <link rel="manifest" href="{% static 'calculator/site.webmanifest' %}">
     <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css"
       rel="stylesheet"
@@ -21,6 +25,9 @@
     {% block mainmenu %}
     <header align="right">
       <ul>
+        <li class="logo">
+          <img src="./static/calculator/images/logo.png" alt="TEST" class="logo-img">
+        </li>
         <li class="logo">
           <a class="menu_logo" href="{% url 'home' %}">US Auto Calculator</a>
         </li>
