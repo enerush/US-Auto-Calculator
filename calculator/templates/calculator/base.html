@@ -26,7 +26,7 @@
     <header align="right">
       <ul>
         <li class="logo">
-          <img src="./static/calculator/images/logo.png" alt="TEST" class="logo-img">
+          <img src="{% static 'calculator/images/logo.png' %}" alt="TEST" class="logo-img">
         </li>
         <li class="logo">
           <a class="menu_logo" href="{% url 'home' %}">US Auto Calculator</a>
@@ -40,6 +40,7 @@
     </header>
     {% endblock mainmenu %} 
     
-    {% block content %} {% endblock content %}
+    {% block content %} 
+    {% endblock content %}
   </body>
 </html>
