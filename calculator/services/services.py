@@ -1,5 +1,6 @@
 import json
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 from calculator.models import City
 from datetime import date
@@ -54,23 +55,22 @@ class Calculator:
         self._repair_cost = float(req.POST['repair_cost'])
         self._company_fee = float(req.POST['company_fee'])
 
-        self.auc_fee = self._calc_auc_fee()
-        self.bank_fee = self._calc_bank_fee()
-        self.ship_cost = self._calc_ship_cost()
-        self.unload_cost = self.PORT_UNLOAD_COST
-        self.broker_cost = self.BROKER_COST
-        self.import_fee = self._calc_import_fee()
+        self._auc_fee = self._calc_auc_fee()
+        self._bank_fee = self._calc_bank_fee()
+        self._ship_cost = self._calc_ship_cost()
+        self._import_fee = self._calc_import_fee()
         self._car_registration = self._calc_car_registration()
-        self.total = self.auc_fee + self.bank_fee + self.ship_cost +\
-                       self.unload_cost + self.broker_cost + self.import_fee
+        self.total = self._price + self._auc_fee + self._bank_fee + self._ship_cost + self.PORT_UNLOAD_COST +\
+                     self.BROKER_COST + self._import_fee + self._company_fee + self._repair_cost +\
+                     self.TOW_COST + self.CERTIFICATE_EURO5 + self._car_registration
 
     def __call__(self):
         """returns the full price of the car, which includes customs fees, delivery, registration"""
         return {
-                'price': self._price, 'auction_fee': self.auc_fee,
-                'bank_fee': self.bank_fee, 'ship_cost': self.ship_cost,
-                'port_unload': self.unload_cost, 'broker': self.broker_cost,
-                'import_fee': self.import_fee, 'company_fee': self._company_fee,
+                'price': self._price, 'auction_fee': self._auc_fee,
+                'bank_fee': self._bank_fee, 'ship_cost': self._ship_cost,
+                'port_unload': self.PORT_UNLOAD_COST, 'broker': self.BROKER_COST,
+                'import_fee': self._import_fee, 'company_fee': self._company_fee,
                 'repair_cost': self._repair_cost, 'tow_cost': self.TOW_COST,
                 'certificate_euro5': self.CERTIFICATE_EURO5, 'car_registration': self._car_registration,
                 'total': round(self.total, 2)
@@ -78,7 +78,7 @@ class Calculator:
 
     def _calc_auc_fee(self):
         service_fee = 79
-        gate_fee = self._price * 5.5
+        gate_fee = self._price * 0.055
         bid_fee = 129
 
         for k, v in self.GATE_FEE.items():
@@ -99,7 +99,7 @@ class Calculator:
 
     def _calc_ship_cost(self):
         c = City.objects.filter(auction=self._auction_name, city=self._city)
-        return float(c[0].price)
+        return float(c[0].price) if c else 0
 
     def _calc_import_fee(self):
         if self._eng_type == 'ELECTRIC':
@@ -182,7 +182,9 @@ class ScanData:
     def get_data(self):
         dct = {}
         if self._auc_name == 'Copart':
-            driver = webdriver.Chrome(executable_path='././chromedriver')
+            chromeOptions = Options()
+            chromeOptions.headless = True
+            driver = webdriver.Chrome(executable_path='././chromedriver', options=chromeOptions)
             try:
                 driver.get(url=self.RESPONSE_COPART + self._lot_number)
                 s = driver.page_source
@@ -197,7 +199,7 @@ class ScanData:
             dct = {
                 'year': data['lcy'],
                 'engine_type': data['ft'],
-                'engine_cc': data['egn'].split('L')[0],
+                'engine_cc': '' if data['ft'] == 'ELECTRIC' else data['egn'].split('L')[0],
                 'auction_name': self._auc_name,
                 'city': data['syn'].split('-')[-1].strip() + '-' + data['syn'].split()[0].strip()
             }
@@ -222,3 +224,4 @@ class ScanData:
             }
         self._req.POST.update(dct)
         return self._req
+

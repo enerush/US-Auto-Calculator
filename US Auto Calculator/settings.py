@@ -24,7 +24,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = '9=*wnv3&a=#hcwjk)n%3!nv^rj^0kg9ekx$@g@^w&p#)e11+o0'
 SECRET_KEY = env("SECRET_KEY")
 
 
@@ -57,6 +56,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+USE_X_FORWARDED_PORT = True
+CSRF_TRUSTED_ORIGINS = ['https://us-auto.pp.ua', 'https://www.us-auto.pp.ua']
+
 
 ROOT_URLCONF = 'US Auto Calculator.urls'
 
@@ -127,7 +132,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATICFILES_DIRS = []
-
+STATIC_ROOT = "/var/www/us-auto.pp.ua/static"
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
