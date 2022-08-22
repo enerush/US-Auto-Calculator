@@ -11,8 +11,6 @@ class City(models.Model):
     def __str__(self):
         return self.city
 
-    def pull_from_xlsx(self):
-        pass
 
 
 

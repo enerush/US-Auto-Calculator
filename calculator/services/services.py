@@ -10,11 +10,13 @@ import requests
 
 
 class Calculator:
+    """A class to represent a calculator."""
+
     PORT_UNLOAD_COST = 400.0
     BROKER_COST = 400.0
     TOW_COST = 220.0
     CERTIFICATE_EURO5 = 300.0
-    CURRENT_EXCHANGE_RATE_UAH = 36.56
+    CURRENT_EXCHANGE_RATE_USD = 36.56
     GATE_FEE = {
         100: 1, 200: 25,
         300: 50, 400: 75,
@@ -65,7 +67,8 @@ class Calculator:
                      self.TOW_COST + self.CERTIFICATE_EURO5 + self._car_registration
 
     def __call__(self):
-        """returns the full price of the car, which includes customs fees, delivery, registration"""
+        """Returns a dictionary with all calc entities and their values."""
+
         return {
                 'price': self._price, 'auction_fee': self._auc_fee,
                 'bank_fee': self._bank_fee, 'ship_cost': self._ship_cost,
@@ -77,6 +80,7 @@ class Calculator:
         }
 
     def _calc_auc_fee(self):
+
         service_fee = 79
         gate_fee = self._price * 0.055
         bid_fee = 129
@@ -94,14 +98,21 @@ class Calculator:
         return round(service_fee + gate_fee + bid_fee, 2)
 
     def _calc_bank_fee(self):
+        """Takes in a car's price, returns bank's transaction costs."""
         res = self._price * 0.005
         return 500 + 12 if res > 500 else res + 12
 
     def _calc_ship_cost(self):
+        """Takes in the name of the auction and the name of the city, returns the cost of delivery of the auto."""
         c = City.objects.filter(auction=self._auction_name, city=self._city)
         return float(c[0].price) if c else 0
 
     def _calc_import_fee(self):
+        """
+        Takes in the type of engine, engine capacity, year of entry and the value of the car,
+        returns the value of customs payments.
+        """
+
         if self._eng_type == 'ELECTRIC':
             return round(self._kwh * 1.02, 2)
 
@@ -114,12 +125,16 @@ class Calculator:
         return round(import_tax + excise_tax + vat, 2)
 
     @staticmethod
-    def _calc_year_coeff(year):
+    def _calc_year_coeff(year: int) -> int:
+        """Takes in the year of entry of the car, returns the year coefficient for customs payments."""
+
         kof = date.today().year - year - 1
         return 15 if kof > 15 else 1 if kof < 1 else kof
 
     @staticmethod
-    def _calc_engine_coeff(egn_type, cc):
+    def _calc_engine_coeff(egn_type: str, cc: float) -> float:
+        """Takes in the engine type, engine capacity, and returns the engine coefficient for customs payments."""
+
         if egn_type == 'DIESEL':
             return 154.10 if cc > 3.5 else 77.05
 
@@ -127,7 +142,9 @@ class Calculator:
             return 102.73 if cc > 3.0 else 51.37
 
     def _calc_car_registration(self):
-        car_price_uah = self._price * self.CURRENT_EXCHANGE_RATE_UAH
+        """Takes in the cost of the car, returns the cost of registering the car."""
+
+        car_price_uah = self._price * self.CURRENT_EXCHANGE_RATE_USD
 
         if car_price_uah <= 409_365:
             coeff = 0.03
@@ -137,11 +154,13 @@ class Calculator:
             coeff = 0.05
 
         pension_fund_fee = self._price * coeff
-        tsc_fee = 830 / self.CURRENT_EXCHANGE_RATE_UAH
+        tsc_fee = 830 / self.CURRENT_EXCHANGE_RATE_USD
         return round(pension_fund_fee + tsc_fee, 2)
 
 
 class ScanData:
+    """A class to represent the scanning of data from Copart and IAAI auctions."""
+
     RESPONSE_COPART = 'https://www.copart.com/public/data/lotdetails/solr/'
     HEADERS = {
         'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko)\
@@ -159,7 +178,7 @@ class ScanData:
         'Gasoline': 'GAS',
         'Diesel': 'DIESEL',
         'Electric': 'ELECTRIC',
-        'Hybrid': 'HYBRID'
+        'Hybrid': 'HYBRID',
     }
 
     def __init__(self, req):
@@ -169,17 +188,22 @@ class ScanData:
         self._lot_number = self._get_lot_number()
 
     @staticmethod
-    def _get_auc_name(url):
+    def _get_auc_name(url: str) -> str:
+        """Takes in a link to the car, returns a name of the auction."""
         name = url.split('.com')[0].split('.')[-1]
         return name.capitalize() if name == 'copart' else name.upper()
 
     def _get_lot_number(self):
+        """Takes in a link to the car, returns a number of auction's lot"""
+
         if self._auc_name == 'Copart':
             return self._url.split('/')[4]
         elif self._auc_name == 'IAAI':
             return self._url.split('/')[-1].split('~')[0]
 
     def get_data(self):
+        """Returns all properties as a dictionary."""
+
         dct = {}
         if self._auc_name == 'Copart':
             chromeOptions = Options()
@@ -199,7 +223,7 @@ class ScanData:
             dct = {
                 'year': data['lcy'],
                 'engine_type': data['ft'],
-                'engine_cc': '' if data['ft'] == 'ELECTRIC' else data['egn'].split('L')[0],
+                'engine_cc': 0.0 if data['ft'] == 'ELECTRIC' else data['egn'].split('L')[0],
                 'auction_name': self._auc_name,
                 'city': data['syn'].split('-')[-1].strip() + '-' + data['syn'].split()[0].strip()
             }
@@ -213,15 +237,20 @@ class ScanData:
             engine_cc = tree.xpath('//*[@id="engine_novideo"]')[0].text_content().split('L')[0]
             year = tree.xpath('/html/body/section/main/section[2]/div[2]/div/h1')[0].text_content().split()[0]
             engine_type = tree.xpath('//*[@id="waypoint-trigger"]/div[2]/ul/li[7]/span[2]')[0].text_content().strip()
-            city = city.split('(')[0].replace('-', ' ').strip(' 1234').upper() + '-' + city.split('(')[1].strip(')')
+            try:
+                city = city.split('(')[0].replace('-', ' ').strip(' 1234').upper() + '-' + city.split('(')[1].strip(')')
+            except:
+                city = ''
+
             city = city.replace('  ', '')
             dct = {
                 'year': year,
                 'engine_type': self.ENGINE_TYPES[engine_type],
-                'engine_cc': engine_cc.strip('-'),
+                'engine_cc': '0.0' if engine_type == 'Electric' else engine_cc.strip('-'),
                 'auction_name': self._auc_name,
                 'city': city
             }
+
         self._req.POST.update(dct)
         return self._req
 
